@@ -26,7 +26,7 @@ public class SAMTestCaseManagerTestImplTest extends BaseSDKUtilsTest {
 		String appName = "streaming-ref-app";
 		String testName = "Test-Normal-Event";
 		Integer testTimeOutInSeconds = 300;
-		Map<String, SamComponent> result = testCaseManager.runTestCaseReturn(appName, testName, testTimeOutInSeconds);
+		Map<String, SamComponent> result = testCaseManager.runTestCase(appName, testName, testTimeOutInSeconds);
 
 	}	
 

@@ -15,7 +15,7 @@ public interface SAMTestCaseManager {
 	 * @return
 	 * @throws Exception
 	 */
-	public abstract Map<String, SamComponent> runTestCaseReturn(String appName,
+	public abstract Map<String, SamComponent> runTestCase(String appName,
 			String testName, Integer testTimeOutInSeconds) throws Exception;
 
 	/**

@@ -27,7 +27,7 @@ public class SAMTestCaseManagerImpl implements SAMTestCaseManager {
 	 * @see hortonworks.hdf.sam.sdk.testcases.manager.SAMTestCaseManager#runTestCaseReturn(java.lang.String, java.lang.String, java.lang.Integer)
 	 */
 	@Override
-	public Map<String, SamComponent> runTestCaseReturn(String appName, String testName, Integer testTimeOutInSeconds) throws Exception {
+	public Map<String, SamComponent> runTestCase(String appName, String testName, Integer testTimeOutInSeconds) throws Exception {
 		TestCaseExecution testCaseExecution = executeAndWaitForTestToComplete(appName, testName,
 				testTimeOutInSeconds);
 		
