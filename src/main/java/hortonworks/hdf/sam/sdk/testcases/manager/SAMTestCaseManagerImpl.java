@@ -2,6 +2,7 @@ package hortonworks.hdf.sam.sdk.testcases.manager;
 
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -27,7 +28,7 @@ public class SAMTestCaseManagerImpl implements SAMTestCaseManager {
 	 * @see hortonworks.hdf.sam.sdk.testcases.manager.SAMTestCaseManager#runTestCaseReturn(java.lang.String, java.lang.String, java.lang.Integer)
 	 */
 	@Override
-	public Map<String, SamComponent> runTestCase(String appName, String testName, Integer testTimeOutInSeconds) throws Exception {
+	public Map<String, List<SamComponent>> runTestCase(String appName, String testName, Integer testTimeOutInSeconds) throws Exception {
 		TestCaseExecution testCaseExecution = executeAndWaitForTestToComplete(appName, testName,
 				testTimeOutInSeconds);
 		

@@ -2,6 +2,7 @@ package hortonworks.hdf.sam.sdk.testcases.manager;
 
 import hortonworks.hdf.sam.sdk.testcases.model.SamComponent;
 
+import java.util.List;
 import java.util.Map;
 
 public interface SAMTestCaseManager {
@@ -15,7 +16,7 @@ public interface SAMTestCaseManager {
 	 * @return
 	 * @throws Exception
 	 */
-	public abstract Map<String, SamComponent> runTestCase(String appName,
+	public abstract Map<String, List<SamComponent>> runTestCase(String appName,
 			String testName, Integer testTimeOutInSeconds) throws Exception;
 
 	/**

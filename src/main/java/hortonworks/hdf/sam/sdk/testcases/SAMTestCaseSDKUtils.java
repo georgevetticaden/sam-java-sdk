@@ -193,7 +193,7 @@ public class SAMTestCaseSDKUtils extends BaseSDKUtils {
 	 * @param testCaseExecutionId
 	 * @return
 	 */
-	public Map<String, SamComponent> getTestCaseExecutionResults(String appName,
+	public Map<String, List<SamComponent>> getTestCaseExecutionResults(String appName,
 			Integer testCaseExecutionId) {
 		/* Get App Id */
 		Integer appId = samAppSDKUtils.getSAMAppId(appName);
@@ -205,9 +205,15 @@ public class SAMTestCaseSDKUtils extends BaseSDKUtils {
 		ResponseEntity<Map<String, List<SamComponent>>> response = restTemplate.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<Map<String, List<SamComponent>>>(){}, mapParams);
 		
 		List<SamComponent> samComponentsList = response.getBody().get("entities");
-		Map<String, SamComponent> samComponentsMaps = new HashMap<String, SamComponent>();
+		Map<String, List<SamComponent>> samComponentsMaps = new HashMap<String, List<SamComponent>>();
 		for(SamComponent samComponent : samComponentsList) {
-			samComponentsMaps.put(samComponent.getComponentName(), samComponent);
+			String componentName = samComponent.getComponentName();
+			List<SamComponent> samComponents = samComponentsMaps.get(componentName);
+			if(samComponents == null)  {
+				samComponents = new ArrayList<SamComponent>();
+				samComponentsMaps.put(componentName,samComponents );
+			}
+			samComponents.add(samComponent);
 		}
 		return samComponentsMaps;		
 		

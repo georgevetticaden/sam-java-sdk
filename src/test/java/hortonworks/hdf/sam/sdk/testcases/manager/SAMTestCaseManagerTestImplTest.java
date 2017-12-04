@@ -1,5 +1,6 @@
 package hortonworks.hdf.sam.sdk.testcases.manager;
 
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
@@ -26,8 +27,8 @@ public class SAMTestCaseManagerTestImplTest extends BaseSDKUtilsTest {
 		String appName = "streaming-ref-app";
 		String testName = "Test-Normal-Event";
 		Integer testTimeOutInSeconds = 300;
-		Map<String, SamComponent> result = testCaseManager.runTestCase(appName, testName, testTimeOutInSeconds);
-
+		Map<String, List<SamComponent>> result = testCaseManager.runTestCase(appName, testName, testTimeOutInSeconds);
+		LOG.info(result.toString());
 	}	
 
 }

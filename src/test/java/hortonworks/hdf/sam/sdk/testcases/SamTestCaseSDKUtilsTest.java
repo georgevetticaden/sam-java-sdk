@@ -8,6 +8,7 @@ import hortonworks.hdf.sam.sdk.testcases.model.SamComponent;
 import hortonworks.hdf.sam.sdk.testcases.model.TestCaseExecution;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
@@ -24,12 +25,13 @@ public class SamTestCaseSDKUtilsTest extends BaseSDKUtilsTest {
 		String appName = SAM_APP_NAME;
 		Integer testCaseExecutionId = 15;
 		
-		Map<String, SamComponent> testCaseExecutionResults = samTestCaseUtils.getTestCaseExecutionResults(appName, testCaseExecutionId);
+		Map<String, List<SamComponent>> testCaseExecutionResults = samTestCaseUtils.getTestCaseExecutionResults(appName, testCaseExecutionId);
 		assertNotNull(testCaseExecutionResults);
 		LOG.info(testCaseExecutionResults.toString());
 		
 		/* Validate the fields from the two streams were joined */
-		SamComponent joinComponentResult = testCaseExecutionResults.get("JOIN");
+		assertThat(testCaseExecutionResults.get("JOIN").size(), is (1));
+		SamComponent joinComponentResult = testCaseExecutionResults.get("JOIN").get(0);
 		assertNotNull(joinComponentResult);	
 		Map<String, String> joinFieldAndValues = joinComponentResult.getFieldsAndValues();
 		
