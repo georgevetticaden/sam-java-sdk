@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import hortonworks.hdf.sam.sdk.testcases.SAMTestCaseSDKUtils;
-import hortonworks.hdf.sam.sdk.testcases.model.SamComponent;
+import hortonworks.hdf.sam.sdk.testcases.model.SamTestComponent;
 import hortonworks.hdf.sam.sdk.testcases.model.TestCaseExecution;
 
 public class SAMTestCaseManagerImpl implements SAMTestCaseManager {
@@ -28,7 +28,7 @@ public class SAMTestCaseManagerImpl implements SAMTestCaseManager {
 	 * @see hortonworks.hdf.sam.sdk.testcases.manager.SAMTestCaseManager#runTestCaseReturn(java.lang.String, java.lang.String, java.lang.Integer)
 	 */
 	@Override
-	public Map<String, List<SamComponent>> runTestCase(String appName, String testName, Integer testTimeOutInSeconds) throws Exception {
+	public Map<String, List<SamTestComponent>> runTestCase(String appName, String testName, Integer testTimeOutInSeconds) throws Exception {
 		TestCaseExecution testCaseExecution = executeAndWaitForTestToComplete(appName, testName,
 				testTimeOutInSeconds);
 		

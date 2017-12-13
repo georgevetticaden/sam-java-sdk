@@ -8,7 +8,7 @@ import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown=true)																																					
-public class SamComponent implements Serializable {
+public class SamTestComponent implements Serializable {
 
 
 	private static final long serialVersionUID = -2793050965134299294L;

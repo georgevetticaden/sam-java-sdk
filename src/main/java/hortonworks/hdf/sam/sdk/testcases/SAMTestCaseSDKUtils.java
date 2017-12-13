@@ -3,7 +3,7 @@ package hortonworks.hdf.sam.sdk.testcases;
 
 import hortonworks.hdf.sam.sdk.BaseSDKUtils;
 import hortonworks.hdf.sam.sdk.app.SAMAppSDKUtils;
-import hortonworks.hdf.sam.sdk.testcases.model.SamComponent;
+import hortonworks.hdf.sam.sdk.testcases.model.SamTestComponent;
 import hortonworks.hdf.sam.sdk.testcases.model.TestCaseExecution;
 
 import java.util.ArrayList;
@@ -193,7 +193,7 @@ public class SAMTestCaseSDKUtils extends BaseSDKUtils {
 	 * @param testCaseExecutionId
 	 * @return
 	 */
-	public Map<String, List<SamComponent>> getTestCaseExecutionResults(String appName,
+	public Map<String, List<SamTestComponent>> getTestCaseExecutionResults(String appName,
 			Integer testCaseExecutionId) {
 		/* Get App Id */
 		Integer appId = samAppSDKUtils.getSAMAppId(appName);
@@ -202,15 +202,15 @@ public class SAMTestCaseSDKUtils extends BaseSDKUtils {
 		mapParams.put("testCaseExecutionId", String.valueOf(testCaseExecutionId));
 		
 		String url = constructRESTUrl("/catalog/topologies/{appId}/testhistories/{testCaseExecutionId}/events");
-		ResponseEntity<Map<String, List<SamComponent>>> response = restTemplate.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<Map<String, List<SamComponent>>>(){}, mapParams);
+		ResponseEntity<Map<String, List<SamTestComponent>>> response = restTemplate.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<Map<String, List<SamTestComponent>>>(){}, mapParams);
 		
-		List<SamComponent> samComponentsList = response.getBody().get("entities");
-		Map<String, List<SamComponent>> samComponentsMaps = new HashMap<String, List<SamComponent>>();
-		for(SamComponent samComponent : samComponentsList) {
+		List<SamTestComponent> samComponentsList = response.getBody().get("entities");
+		Map<String, List<SamTestComponent>> samComponentsMaps = new HashMap<String, List<SamTestComponent>>();
+		for(SamTestComponent samComponent : samComponentsList) {
 			String componentName = samComponent.getComponentName();
-			List<SamComponent> samComponents = samComponentsMaps.get(componentName);
+			List<SamTestComponent> samComponents = samComponentsMaps.get(componentName);
 			if(samComponents == null)  {
-				samComponents = new ArrayList<SamComponent>();
+				samComponents = new ArrayList<SamTestComponent>();
 				samComponentsMaps.put(componentName,samComponents );
 			}
 			samComponents.add(samComponent);
