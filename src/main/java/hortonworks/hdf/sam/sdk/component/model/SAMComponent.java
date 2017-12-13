@@ -17,7 +17,7 @@ public class SAMComponent implements Serializable {
 	private String type;
 	private String subType;
 	private String bundleJar;
-	
+	private SAMComponentUISpec topologyComponentUISpecification;
 
 	public Integer getId() {
 		return id;
@@ -50,6 +50,13 @@ public class SAMComponent implements Serializable {
 		this.bundleJar = bundleJar;
 	}
 	
+	public SAMComponentUISpec getTopologyComponentUISpecification() {
+		return topologyComponentUISpecification;
+	}
+	public void setTopologyComponentUISpecification(
+			SAMComponentUISpec topologyComponentUISpecification) {
+		this.topologyComponentUISpecification = topologyComponentUISpecification;
+	}
 	@Override
 	public String toString() {
 		return ReflectionToStringBuilder.toString(this);

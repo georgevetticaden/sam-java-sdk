@@ -112,25 +112,5 @@ public class SAMSourceSinkComponentSDKUtils extends BaseSDKUtils {
 		
 	}	
 
-	
-	private FileSystemResource createFileSystemResource(String filePath) {
-		File file = null;
-		try {
-			file = ResourceUtils.getFile(ResourceUtils.FILE_URL_PREFIX + filePath);
-		} catch (Exception e) {
-			String errMsg = "Error loading file["+filePath + "]";
-			LOG.error(errMsg);
-			throw new RuntimeException(errMsg, e);
-		}
-		if(!file.exists()) {
-			String errMsg = "File["+filePath + "] cannot be found";
-			LOG.error(errMsg);
-			throw new RuntimeException(errMsg);
-		}	
-		return new FileSystemResource(file);
-	}
-
-
-
 
 }

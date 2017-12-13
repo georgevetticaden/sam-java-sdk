@@ -1,5 +1,6 @@
 package hortonworks.hdf.sam.sdk;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
@@ -7,10 +8,12 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -76,6 +79,23 @@ public abstract class BaseSDKUtils {
 		headers.add("Authorization", "Basic " + base64Creds);
 		
 		return headers;
-	}		
+	}	
+	
+	protected FileSystemResource createFileSystemResource(String filePath) {
+		File file = null;
+		try {
+			file = ResourceUtils.getFile(ResourceUtils.FILE_URL_PREFIX + filePath);
+		} catch (Exception e) {
+			String errMsg = "Error loading file["+filePath + "]";
+			LOG.error(errMsg);
+			throw new RuntimeException(errMsg, e);
+		}
+		if(!file.exists()) {
+			String errMsg = "File["+filePath + "] cannot be found";
+			LOG.error(errMsg);
+			throw new RuntimeException(errMsg);
+		}	
+		return new FileSystemResource(file);
+	}	
 
 }
