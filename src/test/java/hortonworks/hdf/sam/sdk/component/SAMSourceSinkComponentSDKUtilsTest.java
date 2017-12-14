@@ -10,27 +10,33 @@ import org.junit.Test;
 
 public class SAMSourceSinkComponentSDKUtilsTest extends BaseSDKUtilsTest {
 	
-	private static final String KINESIS_SAM_SOURCE_NAME = "Kinesis-NEW";
-	private static final String S3_SAM_SINK_NAME = "S3-NEW";
+	private static final String KINESIS_SAM_SOURCE_NAME = "Kinesis"+SAM_CUSTOM_ARTIFACT_SUFFIX;
+	private static final String S3_SAM_SINK_NAME = "S3"+SAM_CUSTOM_ARTIFACT_SUFFIX;
 	private SAMSourceSinkComponentSDKUtils samProcesserSDK = new SAMSourceSinkComponentSDKUtils(SAM_REST_URL);
 
+	@Test
+	public void uploadAllCustomSourcesAndSinksForRefApp() {
+		uploadCustomKinesisSource();
+		uploadCustomS3Sink();
+	}
+	
+	@Test
+	public void deleteAllCustomSourcesAndSinksForRefApp() {
+		deleteCustomKinesisSource();
+		deleteCustomS3Sink();
+	}
 	
 	@Test
 	public void uploadCustomKinesisSource() {
-		String fluxFileLocation = "/Users/gvetticaden/Dropbox/Hortonworks/HDP-Emerging-Products/A-HDF/A-Master-Demo/all-custom-extensions/3.1/3.1.0.0-270/Sam-Custom-Extensions/aws-integration/kinesis/kinesis-source-topology-component.json";
-		String customSourceJarLocation = "/Users/gvetticaden/Dropbox/Hortonworks/HDP-Emerging-Products/A-HDF/A-Master-Demo/all-custom-extensions/3.1/3.1.0.0-270/Sam-Custom-Extensions/aws-integration/kinesis/sam-custom-source-kinesis-0.0.10.jar";
+		String fluxFileLocation = SAM_EXTENSIONS_HOME + "/custom-source/kinesis/config/kinesis-source-topology-component.json";
+		String customSourceJarLocation = SAM_EXTENSIONS_HOME + "/custom-source/kinesis/sam-custom-source-kinesis-"+ SAM_EXTENSIONS_VERSION +".jar";
 		SAMComponent samCustomSource = samProcesserSDK.uploadSAMComponent(ComponentType.SOURCE, fluxFileLocation, customSourceJarLocation);
 		assertNotNull(samCustomSource);
 		LOG.info(samCustomSource.toString());
 	}
 	
 	
-//	@Test
-//	public void getAllSources() {
-//		Map<String, SAMComponent> allSourcecs = samProcesserSDK.getAllSAMComponents(ComponentType.SOURCE);
-//		LOG.info(allSourcecs.toString());
-//	}	
-//	
+
 	@Test
 	public void getCustomKinesisSource() {
 		String customSourceName = KINESIS_SAM_SOURCE_NAME;
@@ -51,8 +57,8 @@ public class SAMSourceSinkComponentSDKUtilsTest extends BaseSDKUtilsTest {
 	
 	@Test
 	public void uploadCustomS3Sink() {
-		String fluxFileLocation = "/Users/gvetticaden/Dropbox/Hortonworks/HDP-Emerging-Products/A-HDF/A-Master-Demo/all-custom-extensions/3.1/3.1.0.0-270/Sam-Custom-Extensions/aws-integration/s3/s3-sink-topology-component.json";
-		String customSinkJarLocation = "/Users/gvetticaden/Dropbox/Hortonworks/HDP-Emerging-Products/A-HDF/A-Master-Demo/all-custom-extensions/3.1/3.1.0.0-270/Sam-Custom-Extensions/aws-integration/s3/sam-custom-sink-s3-0.0.10.jar";		
+		String fluxFileLocation = SAM_EXTENSIONS_HOME + "/custom-sink/s3/config/s3-sink-topology-component.json";
+		String customSinkJarLocation = SAM_EXTENSIONS_HOME + "/custom-sink/s3/sam-custom-sink-s3-"+ SAM_EXTENSIONS_VERSION +".jar";		
 		SAMComponent samCustomSink = samProcesserSDK.uploadSAMComponent(ComponentType.SINK, fluxFileLocation, customSinkJarLocation);
 		assertNotNull(samCustomSink);
 		LOG.info(samCustomSink.toString());
@@ -76,6 +82,13 @@ public class SAMSourceSinkComponentSDKUtilsTest extends BaseSDKUtilsTest {
 		samCustomSink = samProcesserSDK.getSAMComponent(ComponentType.SINK, customSinkName);
 		assertNull(samCustomSink);
 	}	
+	
+//	@Test
+//	public void getAllSources() {
+//		Map<String, SAMComponent> allSourcecs = samProcesserSDK.getAllSAMComponents(ComponentType.SOURCE);
+//		LOG.info(allSourcecs.toString());
+//	}	
+//		
 	
 
 }

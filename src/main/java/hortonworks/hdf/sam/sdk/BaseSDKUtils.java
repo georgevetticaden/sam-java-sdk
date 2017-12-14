@@ -2,9 +2,11 @@ package hortonworks.hdf.sam.sdk;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,5 +99,16 @@ public abstract class BaseSDKUtils {
 		}	
 		return new FileSystemResource(file);
 	}	
+	
+	protected String getStringContentOfFile(String filePath) {
+		
+		try {
+			return IOUtils.toString(createFileSystemResource(filePath).getInputStream());
+		} catch (IOException e) {
+			String errMsg = "Error reading stream";
+			LOG.error(errMsg);
+			throw new RuntimeException(errMsg, e);
+		}
+	}
 
 }

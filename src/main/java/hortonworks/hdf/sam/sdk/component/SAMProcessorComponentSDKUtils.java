@@ -19,12 +19,23 @@ import hortonworks.hdf.sam.sdk.component.model.SAMComponent;
 import hortonworks.hdf.sam.sdk.component.model.SAMComponentField;
 import hortonworks.hdf.sam.sdk.component.model.SAMProcessorComponent;
 
+/**
+ * Java Rest Client for SAM Processors
+ * @author gvetticaden
+ *
+ */
 public class SAMProcessorComponentSDKUtils extends BaseSDKUtils {
 
 	public SAMProcessorComponentSDKUtils(String restUrl) {
 		super(restUrl);
 	}
 
+	/**
+	 * Uploads a custom processor
+	 * @param fluxFileLocation
+	 * @param customSourceJarLocation
+	 * @return
+	 */
 	public SAMProcessorComponent uploadCustomProcessor(String fluxFileLocation, String customSourceJarLocation) {
 		/* Get handles to the resoures to upload */
 		FileSystemResource fluxResource = createFileSystemResource(fluxFileLocation);
@@ -48,6 +59,10 @@ public class SAMProcessorComponentSDKUtils extends BaseSDKUtils {
 		
 	}
 
+	/**
+	 * Gets a list of all custom processors in SAM
+	 * @return
+	 */
 	public List<SAMProcessorComponent> getAllCustomSAMProcessors() {
 		String url = constructRESTUrl("/catalog/streams/componentbundles/PROCESSOR");
 		ResponseEntity<Map<String, List<SAMProcessorComponent>>> response = restTemplate.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<Map<String, List<SAMProcessorComponent>>>() {});
@@ -64,16 +79,11 @@ public class SAMProcessorComponentSDKUtils extends BaseSDKUtils {
 	
 	}
 
-	private String getCustomProcessorName(List<SAMComponentField> fields) {
-		String customProcessorName = null;
-		for(SAMComponentField samComponentField: fields) {
-			if(samComponentField.getFieldName().equals("name")) {
-				return samComponentField.getDefaultValue();
-			}
-		}
-		return customProcessorName;
-	}
-
+	/**
+	 * Queries the details of a custom processor searched via the processor name
+	 * @param customProcessorName
+	 * @return
+	 */
 	public SAMProcessorComponent getCustomSAMProcessor(
 			String customProcessorName) {
 		SAMProcessorComponent processorComponent = null;
@@ -86,6 +96,10 @@ public class SAMProcessorComponentSDKUtils extends BaseSDKUtils {
 		return processorComponent;
 	}
 
+	/**
+	 * Deletes a custom processor
+	 * @param customProcessorName
+	 */
 	public void deleteCustomSAMProcessor(String customProcessorName) {
 		SAMProcessorComponent processorToDelete = getCustomSAMProcessor(customProcessorName);
 		Map<String, String> mapParams = new HashMap<String, String>();
@@ -96,6 +110,18 @@ public class SAMProcessorComponentSDKUtils extends BaseSDKUtils {
 		restTemplate.exchange(url, HttpMethod.DELETE, null, SAMProcessorComponent.class, mapParams);
 		
 		
+	}	
+
+	private String getCustomProcessorName(List<SAMComponentField> fields) {
+		String customProcessorName = null;
+		for(SAMComponentField samComponentField: fields) {
+			if(samComponentField.getFieldName().equals("name")) {
+				return samComponentField.getDefaultValue();
+			}
+		}
+		return customProcessorName;
 	}
+
+	
 
 }
