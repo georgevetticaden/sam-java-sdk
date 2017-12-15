@@ -1,41 +1,59 @@
 package hortonworks.hdf.sam.sdk.app;
 
+import hortonworks.hdf.sam.sdk.BaseSDKUtils;
+import hortonworks.hdf.sam.sdk.app.model.SAMApplication;
+import hortonworks.hdf.sam.sdk.app.model.SAMApplicationStatus;
+import hortonworks.hdf.sam.sdk.environment.SAMEnvironmentSDKUtils;
+import hortonworks.hdf.sam.sdk.environment.model.SAMEnvironment;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import hortonworks.hdf.sam.sdk.BaseSDKUtils;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
 
 public class SAMAppSDKUtils extends BaseSDKUtils {
 
+	private SAMEnvironmentSDKUtils samEnvSDKUtils;
+
 	public SAMAppSDKUtils(String restUrl) {
 		super(restUrl);
+		this.samEnvSDKUtils = new SAMEnvironmentSDKUtils(restUrl);
 	}
+	
+
 	
 	/**
 	 * Gets the details of a SAM App given the id
 	 * @param appId
 	 * @return
 	 */
-	public Map<String, Object> getSAMAppDetails(Integer appId) {
+	public SAMApplication getSAMAppDetails(Integer appId) {
 
 		Map<String, String> mapParams = new HashMap<>();
 		mapParams.put("appId", String.valueOf(appId));
-		String url = constructRESTUrl(TOPOLOGY_ACTION + "/{appId}");		
-		
-		Map<String, Object> appDetail = executeRESTGetCall(url, mapParams);
-		return appDetail;		
+		String url = constructRESTUrl("/catalog/topologies/{appId}");		
+		ResponseEntity<SAMApplication> response = restTemplate.exchange(url, HttpMethod.GET, null,  SAMApplication.class);
+		return response.getBody();
 	}
 	
 	/**
 	 * Returns all the SAM Apps
 	 * @return
 	 */
-	public Map<String, Object> getAllSAMApps() {
-		String url = constructRESTUrl(TOPOLOGY_ACTION);
+	public List<SAMApplication> getAllSAMApps() {
+		String url = constructRESTUrl("/catalog/topologies");
 		
-		Map<String, Object> samApps = executeRESTGetCall(url, null);
-		return samApps;
+		ResponseEntity<Map<String, List<SAMApplication>>> response = restTemplate.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<Map<String, List<SAMApplication>>>() {});
+		return response.getBody().get("entities");
+	
 	}
 
 	/**
@@ -43,29 +61,92 @@ public class SAMAppSDKUtils extends BaseSDKUtils {
 	 * @param appName
 	 * @return
 	 */
-	public Map<String, Object> getSAMAppDetails(String appName) {
-		Map<String, Object> samAppMap = getAllSAMApps();
-		List<Map<String, Object>> samAppsList =  (List<Map<String, Object>>) samAppMap.get("entities");
-		for(Map<String, Object> samApp: samAppsList) {
-			if(appName.equals(samApp.get("name"))) {
+	public SAMApplication getSAMApp(String appName) {
+		List<SAMApplication> samApps = getAllSAMApps();
+		for(SAMApplication samApp: samApps) {
+			if(appName.equals(samApp.getName())) {
 				return samApp;
 			}
 		}
 		return null;
 	}
 	
-	/**
-	 * REturns the id of a SAM App given the SAM app name
-	 * @param appName
-	 * @return
-	 */
-	public Integer getSAMAppId(String appName) {
-		Map<String, Object> samAppDetails = getSAMAppDetails(appName);
-		Integer appId = null;
-		if(samAppDetails != null) {
-			appId = (Integer)samAppDetails.get("id");
-		}
-		return appId;
+
+
+	public SAMApplication importSAMApp(String appName, String samEnvName,
+			String samImportFile) {
+		/* Get handle to  sam file */
+		FileSystemResource samAppResource = createFileSystemResource(samImportFile);
+		
+		/* Look sam env id */
+		SAMEnvironment samEnv = samEnvSDKUtils.getSAMEnvironment(samEnvName);
+		
+		/* Create request object */
+		LinkedMultiValueMap<String, Object> requestMap = new LinkedMultiValueMap<String, Object>();
+		requestMap.add("file", samAppResource);
+		requestMap.add("topologyName", appName);		
+		requestMap.add("namespaceId", samEnv.getId());
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.MULTIPART_FORM_DATA);		
+		
+		HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity = new HttpEntity<LinkedMultiValueMap<String,Object>>(requestMap, headers);
+		
+		//execute request
+		String url = constructRESTUrl("/catalog/topologies/actions/import");
+		ResponseEntity<SAMApplication> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, SAMApplication.class);
+		
+		return response.getBody();
+		
+	}
+
+
+
+	public void deleteSAMApp(String appName) {
+		SAMApplication appToDelete = getSAMApp(appName);
+		Map<String, String> mapParams = new HashMap<String, String>();
+		mapParams.put("appId", appToDelete.getId().toString());
+		
+		String url = constructRESTUrl("/catalog/topologies/{appId}");
+		
+		restTemplate.exchange(url, HttpMethod.DELETE, null, SAMApplication.class, mapParams);
+
+	}
+
+
+
+	public SAMApplication deploySAMApp(String appName) {
+		SAMApplication appToDelete = getSAMApp(appName);
+		Map<String, String> mapParams = new HashMap<String, String>();
+		mapParams.put("appId", appToDelete.getId().toString());
+		
+		String url = constructRESTUrl("/catalog/topologies/{appId}/actions/deploy");
+		ResponseEntity<SAMApplication> response = restTemplate.exchange(url, HttpMethod.POST, null, SAMApplication.class, mapParams);
+		return response.getBody();
+	}
+
+
+
+	public SAMApplicationStatus getSAMAppStatus(String appName) {
+		SAMApplication appToDelete = getSAMApp(appName);
+		Map<String, String> mapParams = new HashMap<String, String>();
+		mapParams.put("appId", appToDelete.getId().toString());
+		
+		String url = constructRESTUrl("/catalog/topologies/{appId}/actions/status");
+		ResponseEntity<SAMApplicationStatus> response = restTemplate.exchange(url, HttpMethod.GET, null, SAMApplicationStatus.class, mapParams);
+		return response.getBody();
+	}
+
+
+
+	public SAMApplication killSAMApp(String appName) {
+		SAMApplication appToDelete = getSAMApp(appName);
+		Map<String, String> mapParams = new HashMap<String, String>();
+		mapParams.put("appId", appToDelete.getId().toString());
+		
+		String url = constructRESTUrl("/catalog/topologies/{appId}/actions/kill");
+		ResponseEntity<SAMApplication> response = restTemplate.exchange(url, HttpMethod.POST, null, SAMApplication.class, mapParams);
+		return response.getBody();
 	}
 	
 	

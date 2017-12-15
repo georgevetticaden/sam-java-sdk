@@ -32,7 +32,7 @@ public class SAMSourceSinkComponentSDKUtilsTest extends BaseSDKUtilsTest {
 		String customSourceJarLocation = SAM_EXTENSIONS_HOME + "/custom-source/kinesis/sam-custom-source-kinesis-"+ SAM_EXTENSIONS_VERSION +".jar";
 		SAMComponent samCustomSource = samProcesserSDK.uploadSAMComponent(ComponentType.SOURCE, fluxFileLocation, customSourceJarLocation);
 		assertNotNull(samCustomSource);
-		LOG.info(samCustomSource.toString());
+		LOG.info("The Kinesis Source creteated is: " + samCustomSource.toString());
 	}
 	
 	
@@ -47,11 +47,10 @@ public class SAMSourceSinkComponentSDKUtilsTest extends BaseSDKUtilsTest {
 	
 	@Test
 	public void deleteCustomKinesisSource() {
-		String customSourceName = KINESIS_SAM_SOURCE_NAME;
-		SAMComponent samCustomSource = samProcesserSDK.getSAMComponent(ComponentType.SOURCE, customSourceName);
+		SAMComponent samCustomSource = samProcesserSDK.getSAMComponent(ComponentType.SOURCE, KINESIS_SAM_SOURCE_NAME);
 		assertNotNull(samCustomSource);
-		samProcesserSDK.deleteCustomComponent(ComponentType.SOURCE,  customSourceName);
-		samCustomSource = samProcesserSDK.getSAMComponent(ComponentType.SOURCE, customSourceName);
+		samProcesserSDK.deleteCustomComponent(ComponentType.SOURCE,  KINESIS_SAM_SOURCE_NAME);
+		samCustomSource = samProcesserSDK.getSAMComponent(ComponentType.SOURCE, KINESIS_SAM_SOURCE_NAME);
 		assertNull(samCustomSource);
 	}
 	
@@ -75,11 +74,10 @@ public class SAMSourceSinkComponentSDKUtilsTest extends BaseSDKUtilsTest {
 	
 	@Test
 	public void deleteCustomS3Sink() {
-		String customSinkName = S3_SAM_SINK_NAME;
-		SAMComponent samCustomSink = samProcesserSDK.getSAMComponent(ComponentType.SINK, customSinkName);
+		SAMComponent samCustomSink = samProcesserSDK.getSAMComponent(ComponentType.SINK, S3_SAM_SINK_NAME);
 		assertNotNull(samCustomSink);
-		samProcesserSDK.deleteCustomComponent(ComponentType.SINK,  customSinkName);
-		samCustomSink = samProcesserSDK.getSAMComponent(ComponentType.SINK, customSinkName);
+		samProcesserSDK.deleteCustomComponent(ComponentType.SINK,  S3_SAM_SINK_NAME);
+		samCustomSink = samProcesserSDK.getSAMComponent(ComponentType.SINK, S3_SAM_SINK_NAME);
 		assertNull(samCustomSink);
 	}	
 	

@@ -61,7 +61,7 @@ public class SAMTestCaseSDKUtils extends BaseSDKUtils {
 		
 		Map<String, Object> testCases = null;
 		
-		Integer appId = samAppSDKUtils.getSAMAppId(appName);
+		Integer appId = samAppSDKUtils.getSAMApp(appName).getId();
 		if(appId != null) {
 			testCases = getTestCases(appId);
 		}
@@ -100,7 +100,7 @@ public class SAMTestCaseSDKUtils extends BaseSDKUtils {
 			Integer testTimeOutInSeconds) {
 		
 		/* Get App Id */
-		Integer appId = samAppSDKUtils.getSAMAppId(appName);
+		Integer appId = samAppSDKUtils.getSAMApp(appName).getId();
 		Map<String, String> mapParams = new HashMap<>();
 		mapParams.put("appId", String.valueOf(appId));
 		
@@ -140,7 +140,7 @@ public class SAMTestCaseSDKUtils extends BaseSDKUtils {
 		Map<Integer, TestCaseExecution> testCaseExecutionsMap = new HashMap<Integer, TestCaseExecution>();
 		
 		/* Get App Id */
-		Integer appId = samAppSDKUtils.getSAMAppId(appName);
+		Integer appId = samAppSDKUtils.getSAMApp(appName).getId();
 		Map<String, String> mapParams = new HashMap<>();
 		mapParams.put("appId", String.valueOf(appId));
 		
@@ -174,7 +174,7 @@ public class SAMTestCaseSDKUtils extends BaseSDKUtils {
 	public TestCaseExecution getTestCaseExecutions(String appName,
 			Integer testCaseExcutionId) {
 		/* Get App Id */
-		Integer appId = samAppSDKUtils.getSAMAppId(appName);
+		Integer appId = samAppSDKUtils.getSAMApp(appName).getId();
 		Map<String, Integer> mapParams = new HashMap<>();
 		mapParams.put("appId", appId);
 		mapParams.put("testCaseExecutionId", testCaseExcutionId);
@@ -196,7 +196,7 @@ public class SAMTestCaseSDKUtils extends BaseSDKUtils {
 	public Map<String, List<SamTestComponent>> getTestCaseExecutionResults(String appName,
 			Integer testCaseExecutionId) {
 		/* Get App Id */
-		Integer appId = samAppSDKUtils.getSAMAppId(appName);
+		Integer appId = samAppSDKUtils.getSAMApp(appName).getId();
 		Map<String, String> mapParams = new HashMap<>();
 		mapParams.put("appId", String.valueOf(appId));
 		mapParams.put("testCaseExecutionId", String.valueOf(testCaseExecutionId));
@@ -229,7 +229,7 @@ public class SAMTestCaseSDKUtils extends BaseSDKUtils {
 	public Map<String, Object> getTestCaseExecutionResultsAsGenericMap(String appName,
 			Integer testCaseExecutionId) {
 		/* Get App Id */
-		Integer appId = samAppSDKUtils.getSAMAppId(appName);
+		Integer appId = samAppSDKUtils.getSAMApp(appName).getId();
 		Map<String, String> mapParams = new HashMap<>();
 		mapParams.put("appId", String.valueOf(appId));
 		mapParams.put("testCaseExecutionId", String.valueOf(testCaseExecutionId));

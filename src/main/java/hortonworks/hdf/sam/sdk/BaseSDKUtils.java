@@ -24,7 +24,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public abstract class BaseSDKUtils {
 	
 	protected final Logger LOG = LoggerFactory.getLogger(this.getClass());	
-	protected static final String TOPOLOGY_ACTION = "/catalog/topologies";
 	
 	private String samRESTUrl;
 	protected ObjectMapper mapper;
