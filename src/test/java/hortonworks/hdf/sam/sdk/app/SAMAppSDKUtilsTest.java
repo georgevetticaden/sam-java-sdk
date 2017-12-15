@@ -6,9 +6,13 @@ import hortonworks.hdf.sam.sdk.BaseSDKUtilsTest;
 import hortonworks.hdf.sam.sdk.app.model.SAMApplication;
 import hortonworks.hdf.sam.sdk.app.model.SAMApplicationStatus;
 
+import java.io.File;
 import java.util.List;
 
 import org.junit.Test;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.util.ResourceUtils;
 
 public class SAMAppSDKUtilsTest extends BaseSDKUtilsTest {
 	
@@ -16,6 +20,19 @@ public class SAMAppSDKUtilsTest extends BaseSDKUtilsTest {
 	
 	private static final String SAM_ENV_NAME = "Dev";
 	private static final String TRUCKING_REF_APP_ADVANCED = "streaming-ref-app-advanced" + SAM_CUSTOM_ARTIFACT_SUFFIX;
+	
+	@Test
+	public void setUpTruckingRefApp() {
+		importTruckingRefAppAdvanced();
+		deployTruckingRefApp();
+	}
+	
+	
+	@Test
+	public void tearDownTruckingRefApp() {
+		killTruckingRefApp();
+		deleteTruckingRefAppAdvanced();
+	}
 	
 	@Test
 	public void killTruckingRefApp() {
@@ -36,13 +53,18 @@ public class SAMAppSDKUtilsTest extends BaseSDKUtilsTest {
 		LOG.info(samApp.toString());
 	}
 	
+
+	
 	@Test
 	public void importTruckingRefAppAdvanced() {
 		String samImportFile = SAM_EXTENSIONS_HOME + "/sam-app/streaming-ref-app-advanced.json";
-		SAMApplication samApp = samAppSDKUtils.importSAMApp(TRUCKING_REF_APP_ADVANCED, SAM_ENV_NAME, samImportFile);
+		Resource samImportResource = createFileSystemResource(samImportFile);
+		SAMApplication samApp = samAppSDKUtils.importSAMApp(TRUCKING_REF_APP_ADVANCED, SAM_ENV_NAME, samImportResource);
 		assertNotNull(samApp);
 		LOG.info(samApp.toString());
 	}
+	
+
 	
 	@Test 
 	public void getSAMTruckingRefApp() {		
@@ -68,6 +90,7 @@ public class SAMAppSDKUtilsTest extends BaseSDKUtilsTest {
 		LOG.info(appDetails.toString());
 	}	
 	
+
 
 	
 	

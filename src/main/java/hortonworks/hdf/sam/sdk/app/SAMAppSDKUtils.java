@@ -6,18 +6,21 @@ import hortonworks.hdf.sam.sdk.app.model.SAMApplicationStatus;
 import hortonworks.hdf.sam.sdk.environment.SAMEnvironmentSDKUtils;
 import hortonworks.hdf.sam.sdk.environment.model.SAMEnvironment;
 
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.ResourceUtils;
 
 public class SAMAppSDKUtils extends BaseSDKUtils {
 
@@ -74,16 +77,18 @@ public class SAMAppSDKUtils extends BaseSDKUtils {
 
 
 	public SAMApplication importSAMApp(String appName, String samEnvName,
-			String samImportFile) {
-		/* Get handle to  sam file */
-		FileSystemResource samAppResource = createFileSystemResource(samImportFile);
+			Resource samAppImportFileResource) {
 		
+		if(samAppImportFileResource == null || !samAppImportFileResource.exists()) {
+			String errMsg = "Cannot load SAM application file";
+			throw new RuntimeException(errMsg);
+		}
 		/* Look sam env id */
 		SAMEnvironment samEnv = samEnvSDKUtils.getSAMEnvironment(samEnvName);
 		
 		/* Create request object */
 		LinkedMultiValueMap<String, Object> requestMap = new LinkedMultiValueMap<String, Object>();
-		requestMap.add("file", samAppResource);
+		requestMap.add("file", samAppImportFileResource);
 		requestMap.add("topologyName", appName);		
 		requestMap.add("namespaceId", samEnv.getId());
 		
@@ -99,8 +104,7 @@ public class SAMAppSDKUtils extends BaseSDKUtils {
 		return response.getBody();
 		
 	}
-
-
+	
 
 	public void deleteSAMApp(String appName) {
 		SAMApplication appToDelete = getSAMApp(appName);
@@ -116,9 +120,9 @@ public class SAMAppSDKUtils extends BaseSDKUtils {
 
 
 	public SAMApplication deploySAMApp(String appName) {
-		SAMApplication appToDelete = getSAMApp(appName);
+		SAMApplication samApp = getSAMApp(appName);
 		Map<String, String> mapParams = new HashMap<String, String>();
-		mapParams.put("appId", appToDelete.getId().toString());
+		mapParams.put("appId", samApp.getId().toString());
 		
 		String url = constructRESTUrl("/catalog/topologies/{appId}/actions/deploy");
 		ResponseEntity<SAMApplication> response = restTemplate.exchange(url, HttpMethod.POST, null, SAMApplication.class, mapParams);

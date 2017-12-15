@@ -1,8 +1,11 @@
 package hortonworks.hdf.sam.sdk;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
@@ -15,11 +18,14 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 public abstract class BaseSDKUtils {
 	
@@ -27,7 +33,7 @@ public abstract class BaseSDKUtils {
 	
 	private String samRESTUrl;
 	protected ObjectMapper mapper;
-	protected RestTemplate restTemplate;
+	public RestTemplate restTemplate;
 	
 
 	public BaseSDKUtils(String restUrl) {
@@ -37,6 +43,8 @@ public abstract class BaseSDKUtils {
 		}
 		this.samRESTUrl = restUrl;
 		this.restTemplate = new RestTemplate();
+		
+		
 		this.mapper = new ObjectMapper();
 
 	}
