@@ -35,6 +35,7 @@ public class SAMAppManagerTest extends BaseSDKUtilsTest {
 		samAppManager.importSAMApplication(TRUCKING_REF_APP_ADVANCED, SAM_ENV_NAME, samImportResource);
 	}
 	
+	@Test
 	public void deployTruckingRefApp() {
 		SAMApplicationStatus appStatus = samAppManager.deploySAMApplication(TRUCKING_REF_APP_ADVANCED, 35);
 		assertNotNull(appStatus);

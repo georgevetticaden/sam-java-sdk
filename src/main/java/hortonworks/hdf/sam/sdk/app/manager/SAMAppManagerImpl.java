@@ -14,6 +14,8 @@ public class SAMAppManagerImpl implements SAMAppManager {
 	
 	
 	private static final Logger LOG = LoggerFactory.getLogger(SAMAppManagerImpl.class);
+
+	private static final int DEFAULT_KILL_TIMEOUT_SECONDS = 35;;
 	
 	private SAMAppSDKUtils samAppSDKUtils;
 	
@@ -27,9 +29,15 @@ public class SAMAppManagerImpl implements SAMAppManager {
 	@Override
 	public SAMApplicationStatus deploySAMApplication(String appName, int deployTimeoutSeconds)    {
 		
+		/* First check if app is deployed and if so, kill it before deploying */
+		if(isAppDeployed(appName)) {
+			LOG.info("SAM App[" + appName + "] is already deployed. Going to kill it first");
+			killSAMApplication(appName, DEFAULT_KILL_TIMEOUT_SECONDS);
+		}
+			
 		DateTime startTime = new DateTime();
 		LOG.info("Starting deployment of SAM App[" + appName+ "] started at time[" + startTime.toString() + "]");		
-		
+				
 		/* Deploy the app */
 		samAppSDKUtils.deploySAMApp(appName);
 		
@@ -74,6 +82,22 @@ public class SAMAppManagerImpl implements SAMAppManager {
 		
 	}
 	
+	private boolean isAppDeployed(String appName) {
+		try {
+			SAMApplicationStatus appStatus =  samAppSDKUtils.getSAMAppStatus(appName);
+			if("ACTIVE".equals(appStatus.getStatus())) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (Exception e) {
+			//if exception app is not deployed
+			return false;
+		}
+		
+		
+	}
+
 	@Override
 	public SAMApplication importSAMApplication(String appName, String samEnvName, Resource samAppImportFile) {
 		return samAppSDKUtils.importSAMApp(appName, samEnvName, samAppImportFile);
