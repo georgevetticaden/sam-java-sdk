@@ -38,9 +38,17 @@ public interface SAMAppManager {
 
 
 	/**
+	 * Kills/Undeploys the SAM application with default timeout
+	 * @param samAppName
+	 */
+	public abstract void killSAMApplication(String samAppName);
+	
+	/**
 	 * Deletes the SAM application from SAM
 	 * @param appName
 	 */
 	public abstract void deleteSAMApplication(String appName);
+
+
 
 }

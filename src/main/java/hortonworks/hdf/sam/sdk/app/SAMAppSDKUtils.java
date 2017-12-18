@@ -108,6 +108,10 @@ public class SAMAppSDKUtils extends BaseSDKUtils {
 
 	public void deleteSAMApp(String appName) {
 		SAMApplication appToDelete = getSAMApp(appName);
+		if(appToDelete == null) {
+			LOG.warn("App["+ appName + " doesn't exist so nothing to delete");
+			return;
+		}		
 		Map<String, String> mapParams = new HashMap<String, String>();
 		mapParams.put("appId", appToDelete.getId().toString());
 		
@@ -145,6 +149,10 @@ public class SAMAppSDKUtils extends BaseSDKUtils {
 
 	public SAMApplication killSAMApp(String appName) {
 		SAMApplication appToDelete = getSAMApp(appName);
+		if(appToDelete == null) {
+			LOG.warn("App["+ appName + " doesn't exist so nothing to kill");
+			return null;
+		}
 		Map<String, String> mapParams = new HashMap<String, String>();
 		mapParams.put("appId", appToDelete.getId().toString());
 		

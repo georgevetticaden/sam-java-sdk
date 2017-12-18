@@ -103,6 +103,13 @@ public class SAMAppManagerImpl implements SAMAppManager {
 		return samAppSDKUtils.importSAMApp(appName, samEnvName, samAppImportFile);
 	}
 	
+	
+	@Override
+	public void killSAMApplication(String samAppName) {
+		killSAMApplication(samAppName, DEFAULT_KILL_TIMEOUT_SECONDS);
+		
+	}
+	
 	@Override
 	public void killSAMApplication(String appName, int killTimeOutSeconds) {
 		
@@ -140,6 +147,7 @@ public class SAMAppManagerImpl implements SAMAppManager {
 		throw new RuntimeException(errMsg);
 	}
 	
+	
 	@Override
 	public void deleteSAMApplication(String appName) {
 		samAppSDKUtils.deleteSAMApp(appName);
@@ -152,5 +160,7 @@ public class SAMAppManagerImpl implements SAMAppManager {
 			
 		}
 	}
+
+
 
 }
