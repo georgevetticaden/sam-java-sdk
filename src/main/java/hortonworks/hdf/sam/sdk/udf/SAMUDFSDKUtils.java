@@ -70,8 +70,12 @@ public class SAMUDFSDKUtils extends BaseSDKUtils {
 		
 	}
 
-	public void deleteUDF(String roundUdfName) {
-		SAMUDF udfToDelete = getUDF(roundUdfName);
+	public void deleteUDF(String udfName) {
+		SAMUDF udfToDelete = getUDF(udfName);
+		if(udfToDelete == null) {
+			LOG.warn("Custom UDF [" + udfName + "] doesn't exist. Nothing to delete");
+			return;
+		}		
 		Map<String, String> mapParams = new HashMap<String, String>();
 		mapParams.put("udfId", udfToDelete.getId().toString());
 		

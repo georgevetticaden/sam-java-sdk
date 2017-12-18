@@ -102,7 +102,10 @@ public class SAMSourceSinkComponentSDKUtils extends BaseSDKUtils {
 	 */
 	public void deleteCustomComponent(ComponentType componentType, String customSourceName) {
 		SAMComponent samComponent = getAllSAMComponents(componentType).get(customSourceName);
-		
+		if(samComponent == null) {
+			LOG.warn("Custom Component [" + customSourceName + "] doesn't exist. Nothing to delete");
+			return;
+		}		
 		Map<String, String> mapParams = new HashMap<String, String>();
 		mapParams.put("sourceId", samComponent.getId().toString());
 		

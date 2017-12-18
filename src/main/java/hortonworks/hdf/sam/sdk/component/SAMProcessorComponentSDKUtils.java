@@ -102,6 +102,10 @@ public class SAMProcessorComponentSDKUtils extends BaseSDKUtils {
 	 */
 	public void deleteCustomSAMProcessor(String customProcessorName) {
 		SAMProcessorComponent processorToDelete = getCustomSAMProcessor(customProcessorName);
+		if(processorToDelete == null) {
+			LOG.warn("Custom Processor [" + customProcessorName + "] doesn't exist. Nothing to delete");
+			return;
+		}
 		Map<String, String> mapParams = new HashMap<String, String>();
 		mapParams.put("processorId", processorToDelete.getId().toString());
 		

@@ -73,8 +73,12 @@ public class SAMModelRegistrySDKUtils extends BaseSDKUtils {
 		
 	}
 
-	public void deleteModel(String violationPredictionModelName) {
-		PMMLModel modelToDelete = getModel(violationPredictionModelName);
+	public void deleteModel(String pmmlModelName) {
+		PMMLModel modelToDelete = getModel(pmmlModelName);
+		if(modelToDelete == null) {
+			LOG.warn("Custom PMML Model[ " + pmmlModelName + "] doesn't exist. Nothing to delete");
+			return;
+		}			
 		Map<String, String> mapParams = new HashMap<String, String>();
 		mapParams.put("modelId", modelToDelete.getId().toString());
 		
