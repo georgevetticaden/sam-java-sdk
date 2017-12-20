@@ -75,12 +75,14 @@ public class SAMAppSDKUtilsTest extends BaseSDKUtilsTest {
 
 	@Test
 	public void deleteTruckingRefAppAdvanced() {
-		SAMApplication appToDelete = samAppSDKUtils.getSAMApp(TRUCKING_REF_APP_ADVANCED);
+		String appName = TRUCKING_REF_APP_ADVANCED;
+		//String appName =  "test";
+		SAMApplication appToDelete = samAppSDKUtils.getSAMApp(appName);
 		assertNotNull(appToDelete);
 		
-		samAppSDKUtils.deleteSAMApp(TRUCKING_REF_APP_ADVANCED);
+		samAppSDKUtils.deleteSAMApp(appName);
 		
-		appToDelete = samAppSDKUtils.getSAMApp(TRUCKING_REF_APP_ADVANCED);
+		appToDelete = samAppSDKUtils.getSAMApp(appName);
 		assertNull(appToDelete);		
 	}	
 	
