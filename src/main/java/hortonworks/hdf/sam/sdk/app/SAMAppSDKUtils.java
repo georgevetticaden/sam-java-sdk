@@ -156,10 +156,32 @@ public class SAMAppSDKUtils extends BaseSDKUtils {
 		Map<String, String> mapParams = new HashMap<String, String>();
 		mapParams.put("appId", appToDelete.getId().toString());
 		
+		/* See if it is deployed if not, there is nothing to kill */
+		if(!isAppDeployed(appName)) {
+			LOG.warn("SAM app ["+ appName +"] is not deployed. So nthing to kill");
+			return null;
+		}
 		String url = constructRESTUrl("/catalog/topologies/{appId}/actions/kill");
 		ResponseEntity<SAMApplication> response = restTemplate.exchange(url, HttpMethod.POST, null, SAMApplication.class, mapParams);
 		return response.getBody();
 	}
+	
+	public boolean isAppDeployed(String appName) {
+		try {
+			SAMApplicationStatus appStatus =  getSAMAppStatus(appName);
+			if("ACTIVE".equals(appStatus.getStatus())) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (Exception e) {
+			//if exception app is not deployed
+			return false;
+		}
+		
+		
+	}
+	
 	
 	
 

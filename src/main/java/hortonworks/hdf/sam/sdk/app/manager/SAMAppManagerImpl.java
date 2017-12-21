@@ -30,7 +30,7 @@ public class SAMAppManagerImpl implements SAMAppManager {
 	public SAMApplicationStatus deploySAMApplication(String appName, int deployTimeoutSeconds)    {
 		
 		/* First check if app is deployed and if so, kill it before deploying */
-		if(isAppDeployed(appName)) {
+		if(samAppSDKUtils.isAppDeployed(appName)) {
 			LOG.info("SAM App[" + appName + "] is already deployed. Going to kill it first");
 			killSAMApplication(appName, DEFAULT_KILL_TIMEOUT_SECONDS);
 		}
@@ -82,22 +82,7 @@ public class SAMAppManagerImpl implements SAMAppManager {
 		
 	}
 	
-	private boolean isAppDeployed(String appName) {
-		try {
-			SAMApplicationStatus appStatus =  samAppSDKUtils.getSAMAppStatus(appName);
-			if("ACTIVE".equals(appStatus.getStatus())) {
-				return true;
-			} else {
-				return false;
-			}
-		} catch (Exception e) {
-			//if exception app is not deployed
-			return false;
-		}
-		
-		
-	}
-
+	
 	@Override
 	public SAMApplication importSAMApplication(String appName, String samEnvName, Resource samAppImportFile) {
 		return samAppSDKUtils.importSAMApp(appName, samEnvName, samAppImportFile);
