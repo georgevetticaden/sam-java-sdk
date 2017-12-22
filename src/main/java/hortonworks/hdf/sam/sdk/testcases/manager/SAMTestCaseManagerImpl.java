@@ -7,8 +7,10 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.Resource;
 
 import hortonworks.hdf.sam.sdk.testcases.SAMTestCaseSDKUtils;
+import hortonworks.hdf.sam.sdk.testcases.model.SAMTestCase;
 import hortonworks.hdf.sam.sdk.testcases.model.SamTestComponent;
 import hortonworks.hdf.sam.sdk.testcases.model.TestCaseExecution;
 
@@ -97,6 +99,39 @@ public class SAMTestCaseManagerImpl implements SAMTestCaseManager {
 			throw new RuntimeException(errMsg);
 		}
 		return testCaseExecution;
+	}
+
+
+
+	@Override
+	public SAMTestCase createTestCase(String appName, String testName,
+			Map<String, Resource> testDataForSources) {
+		
+		if(testCaseSDKUils.getTestCase(appName, testName) != null) {
+			String errMsg ="Test Case["+testName +" for SAM App["+appName +"] already exist";
+			LOG.error(errMsg);
+			throw new RuntimeException(errMsg);
+		}
+		LOG.info("Creating Test Case["+testName +" for SAM App["+appName +"]");
+		SAMTestCase testCase = testCaseSDKUils.createTestCase(appName, testName);
+		LOG.info("Creating Test Case["+testName +" for SAM App["+appName +"]");
+		
+		LOG.info("Adding datasaets for the Test Case["+testName +" in SAM App["+appName +"]");
+		testCaseSDKUils.addTestDataToTestCase(appName, testName, testDataForSources);
+		LOG.info("Finished Adding datasaets for the Test Case["+testName +" in SAM App["+appName +"]");
+		
+		return testCase;
+		
+		
+		
+	}
+
+
+
+	@Override
+	public void deleteTestCase(String appName, String testName) {
+		testCaseSDKUils.deleteTestCase(appName, testName);
+		
 	}
 
 }

@@ -1,9 +1,12 @@
 package hortonworks.hdf.sam.sdk.testcases.manager;
 
+import hortonworks.hdf.sam.sdk.testcases.model.SAMTestCase;
 import hortonworks.hdf.sam.sdk.testcases.model.SamTestComponent;
 
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.core.io.Resource;
 
 public interface SAMTestCaseManager {
 
@@ -27,5 +30,23 @@ public interface SAMTestCaseManager {
 	public abstract Map<String, Object> runTestCaseReturnGenericMapOfResults(
 			String appName, String testName, Integer testTimeOutInSeconds)
 			throws Exception;
+
+	/**
+	 * Create a SAM Test Case and setups the test data to mock out each source of the App
+	 * @param appName
+	 * @param testName
+	 * @param testDataForSources
+	 * @return 
+	 */
+	public abstract SAMTestCase createTestCase(String appName, String testName,
+			Map<String, Resource> testDataForSources);
+	
+	
+	/**
+	 * Deletes a Test Case for a given SAM App
+	 * @param appName
+	 * @param testName
+	 */
+	public abstract void deleteTestCase(String appName, String testName);
 
 }
