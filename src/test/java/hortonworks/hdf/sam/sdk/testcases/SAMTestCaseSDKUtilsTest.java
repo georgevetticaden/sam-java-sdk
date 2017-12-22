@@ -4,21 +4,88 @@ import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.is;
 import hortonworks.hdf.sam.sdk.BaseSDKUtilsTest;
 import hortonworks.hdf.sam.sdk.testcases.SAMTestCaseSDKUtils;
+import hortonworks.hdf.sam.sdk.testcases.model.SAMTestCase;
 import hortonworks.hdf.sam.sdk.testcases.model.SamTestComponent;
 import hortonworks.hdf.sam.sdk.testcases.model.TestCaseExecution;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.junit.Test;
+import org.springframework.core.io.Resource;
 
-public class SamTestCaseSDKUtilsTest extends BaseSDKUtilsTest {
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+public class SAMTestCaseSDKUtilsTest extends BaseSDKUtilsTest {
 	
 
 	private static final String SAM_APP_NAME = "streaming-ref-app";
 	private SAMTestCaseSDKUtils samTestCaseUtils = new SAMTestCaseSDKUtils(SAM_REST_URL);
 	
+	
+	@Test
+	public void createNormalEventTestCase() {
+		String appName = SAM_APP_NAME;
+		String testName = "Test-Normal-Event";
+		
+		//validate the test doesn't exist
+		Map<String, Object> testCaseMap = samTestCaseUtils.getTestCase(appName, testName);
+		assertNull(testCaseMap);
+		
+		//create test case
+
+		SAMTestCase testCase = samTestCaseUtils.createTestCase(appName, testName );
+		assertNotNull(testCase);
+		LOG.info(testCase.toString());
+		
+		//validate the test exists
+		testCaseMap = samTestCaseUtils.getTestCase(appName, testName);
+		assertNotNull(testCaseMap);
+		LOG.info(testCaseMap.toString());
+		
+	}
+	
+	@Test
+	public void addTestDataToTestCase() {
+		String appName = SAM_APP_NAME;
+		String testName = "Test-Normal-Event";		
+		
+		//Create map of test data for each source in the app
+		Map<String, Resource> testDataForSources = new HashMap<String, Resource>();
+		Resource geoStreamTestData = createClassPathResource("test-cases-source-data/normal-event-test/geo-stream-test-data.json");	
+		testDataForSources.put("GeoStream", geoStreamTestData);
+		
+		Resource speedStreamTestData = createClassPathResource("test-cases-source-data/normal-event-test/speed-stream-test-data.json");	
+		testDataForSources.put("SpeedStream", speedStreamTestData);
+		
+		samTestCaseUtils.addTestDataToTestCase(appName, testName, testDataForSources);
+	}
+
+	
+	@Test
+	public void deleteNormalEventTestCaset() {
+		String appName = SAM_APP_NAME;
+		String testName = "Test-Normal-Event";
+		
+		//validate the test doesn't exist
+		Map<String, Object> testCaseMap = samTestCaseUtils.getTestCase(appName, testName);
+		assertNotNull(testCaseMap);
+		
+		//delete Test case
+		samTestCaseUtils.deleteTestCase(appName, testName);
+
+		
+		//validate the test doesn't exist
+		testCaseMap = samTestCaseUtils.getTestCase(appName, testName);
+		assertNull(testCaseMap);
+		
+	}
+		
 	
 	@Test
 	public void getTestCaseExecutionResultsForByAppNameAndTestCaseExecutionIdReturnSamComponents() {

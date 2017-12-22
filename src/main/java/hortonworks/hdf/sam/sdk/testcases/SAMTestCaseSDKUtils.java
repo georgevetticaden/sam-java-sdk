@@ -3,23 +3,26 @@ package hortonworks.hdf.sam.sdk.testcases;
 
 import hortonworks.hdf.sam.sdk.BaseSDKUtils;
 import hortonworks.hdf.sam.sdk.app.SAMAppSDKUtils;
+import hortonworks.hdf.sam.sdk.app.model.SAMAppSource;
+import hortonworks.hdf.sam.sdk.testcases.model.SAMTestCase;
 import hortonworks.hdf.sam.sdk.testcases.model.SamTestComponent;
 import hortonworks.hdf.sam.sdk.testcases.model.TestCaseExecution;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
+import org.apache.commons.io.IOUtils;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Java clients for  SAM's Test Case  features powered by REST
@@ -125,7 +128,12 @@ public class SAMTestCaseSDKUtils extends BaseSDKUtils {
 	 */
 	public Integer getTestCaseId(String appName, String testName) {
 		Map<String, Object> testCase = getTestCase(appName, testName);
-		return (Integer) testCase.get("id");
+		if(testCase != null) {
+			return (Integer) testCase.get("id");
+		} else {
+			return null;
+		}
+		
 	}
 
 	/**
@@ -239,6 +247,133 @@ public class SAMTestCaseSDKUtils extends BaseSDKUtils {
 		
 		
 	}
+
+	public SAMTestCase createTestCase(String appName, String testName) {
+		/* Get App Id */
+		Integer appId = samAppSDKUtils.getSAMApp(appName).getId();
+		Map<String, String> mapParams = new HashMap<>();
+		mapParams.put("appId", String.valueOf(appId));
+		
+		
+		/* Create request object */
+		Map<String, Object> requestMap = new HashMap<String, Object>();
+		requestMap.put("name", testName);
+		
+		HttpHeaders headers = new HttpHeaders();
+		
+		HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<Map<String, Object>>(requestMap, headers);
+		String url = constructRESTUrl("/catalog/topologies/{appId}/testcases");
+
+		ResponseEntity<SAMTestCase> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, SAMTestCase.class, mapParams);
+		
+		return response.getBody();
+		
+	}
+	
+
+
+	public void deleteTestCase(String appName, String testName) {
+		Integer testCaseId = getTestCaseId(appName, testName);
+		if(testCaseId == null) {
+			LOG.warn("Test Case[" + testName + "] for App["+ appName + "] doesn't exist. Nothing to delete");
+			return;
+		}
+		Map<String, String> mapParams = new HashMap<>();
+		mapParams.put("testCaseId", testCaseId.toString());
+		
+		/* Get App Id */
+		Integer appId = samAppSDKUtils.getSAMApp(appName).getId();
+		mapParams.put("appId", String.valueOf(appId));		
+		
+		
+		
+		String url = constructRESTUrl("/catalog/topologies/{appId}/testcases/{testCaseId}");
+		
+		restTemplate.exchange(url, HttpMethod.DELETE, null, SAMTestCase.class, mapParams);		
+		
+		
+	}
+
+	public void addTestDataToTestCase(String appName, String testName,
+			Map<String, Resource> testDataForSources) {
+		
+		Integer testCaseId = getTestCaseId(appName, testName);
+		if(testCaseId == null) {
+			String errMsg = "Test Case[" + testName + "] for App["+ appName + "] doesn't exist. Nothing to delete";
+			LOG.error(errMsg);
+			throw new RuntimeException(errMsg);
+		}
+		Map<String, String> mapParams = new HashMap<>();
+		mapParams.put("testCaseId", testCaseId.toString());
+		
+		/* Get App Id */
+		Integer appId = samAppSDKUtils.getSAMApp(appName).getId();
+		mapParams.put("appId", String.valueOf(appId));	
+		
+		/* Iterate through each test data source and add it to test */
+		String addDataSourceURL = constructRESTUrl("/catalog/topologies/{appId}/testcases/{testCaseId}/sources");
+		String validateDataSourceUrl = constructRESTUrl("/catalog/topologies/{appId}/testcases/{testCaseId}/sources/validate");
+		for(String sourceName: testDataForSources.keySet()) {
+			Resource testData = testDataForSources.get(sourceName);
+			
+			Map<String, Object> requestMap = createRequestMap(appName,
+					testCaseId, sourceName, testData);
+			
+			HttpHeaders headers = new HttpHeaders();
+			
+			HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<Map<String, Object>>(requestMap, headers);			
+			
+			String testDataRecords = (String) requestMap.get("records");
+			LOG.info("Validating Data["+ testDataRecords +"] for Test["+testName+"] for Source["+sourceName+"]" );
+			restTemplate.exchange(validateDataSourceUrl, HttpMethod.POST,  requestEntity, SAMTestCase.class, mapParams);
+			LOG.info("Finished Validating Data["+testDataRecords +"] for Test["+testName+"] for Source["+sourceName+"]" );
+			
+			LOG.info("Adding Data["+testDataRecords +"] for Test["+testName+"] for Source["+sourceName+"]" );
+			restTemplate.exchange(addDataSourceURL, HttpMethod.POST,  requestEntity, SAMTestCase.class, mapParams);
+			LOG.info("Finished Adding Data["+testDataRecords +"] for Test["+testName+"] for Source["+sourceName+"]" );
+			
+		}
+
+		
+	}
+
+	private Map<String, Object> createRequestMap(String appName,
+			Integer testCaseId, String sourceName, Resource testData) {
+	
+		Map<String, Object> requestMap = new HashMap<String, Object>();
+		/* Find the dataSourceId for the the test data that we are created */
+		SAMAppSource appSource = samAppSDKUtils.getSAMAppSource(appName, sourceName);
+		if(appSource == null) {
+			String errorMsg = "Source["+sourceName + "] not foudn in App["+appName+"]";
+			LOG.error(errorMsg);
+			throw new RuntimeException(errorMsg);
+		}
+		Long dataSourceId = appSource.getId();
+		String streamId = (String)appSource.getOutputStreams().get(0).get("streamId");
+		requestMap.put("sourceId", dataSourceId);
+		
+		try{
+			
+			/* Jump through hoops to create the test data in the write json format */
+			Map<String, String> testDataMap = new HashMap<String, String>();
+			String testDataString = IOUtils.toString(testData.getInputStream());
+			testDataMap.put(streamId, testDataString);
+			String testRecords = new ObjectMapper().writeValueAsString(testDataMap);		
+			requestMap.put("records", testRecords);
+			
+			requestMap.put("occurrence", 1);
+			requestMap.put("sleepMsPerIteration", 0 );
+			requestMap.put("testCaseId", testCaseId);			
+		} catch (Exception e) {
+			String errMsg = "Error reading test data[" + testData + "]";
+			LOG.error(errMsg);
+			throw new RuntimeException(errMsg, e);
+		}
+		
+		return requestMap;
+	}
+
+
 	
 
 	

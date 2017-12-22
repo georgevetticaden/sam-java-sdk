@@ -1,18 +1,18 @@
 package hortonworks.hdf.sam.sdk.app;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import hortonworks.hdf.sam.sdk.BaseSDKUtilsTest;
+import hortonworks.hdf.sam.sdk.app.model.SAMAppSource;
 import hortonworks.hdf.sam.sdk.app.model.SAMApplication;
 import hortonworks.hdf.sam.sdk.app.model.SAMApplicationStatus;
 
-import java.io.File;
 import java.util.List;
 
 import org.junit.Test;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import org.springframework.util.ResourceUtils;
 
 public class SAMAppSDKUtilsTest extends BaseSDKUtilsTest {
 	
@@ -93,8 +93,23 @@ public class SAMAppSDKUtilsTest extends BaseSDKUtilsTest {
 	}	
 	
 
+	@Test
+	public void getSAMAppSources() {
+		String appName = "streaming-ref-app";
+		List<SAMAppSource> appSources = samAppSDKUtils.getSAMAppSources(appName);
+		assertNotNull(appSources);
+		assertThat(appSources.size(), is(2));
+		LOG.info(appSources.toString());
+	}
 
-	
+	@Test
+	public void getSAMAppSource() {
+		String appName = "streaming-ref-app";
+		String sourceName = "GeoStream";
+		SAMAppSource appSource = samAppSDKUtils.getSAMAppSource(appName, sourceName);
+		assertNotNull(appSource);
+		LOG.info(appSource.toString());
+	}	
 	
 
 }

@@ -2,6 +2,7 @@ package hortonworks.hdf.sam.sdk.modelregistry;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+
 import hortonworks.hdf.sam.sdk.BaseSDKUtilsTest;
 import hortonworks.hdf.sam.sdk.modelregistry.model.PMMLModel;
 

@@ -1,6 +1,7 @@
 package hortonworks.hdf.sam.sdk.app;
 
 import hortonworks.hdf.sam.sdk.BaseSDKUtils;
+import hortonworks.hdf.sam.sdk.app.model.SAMAppSource;
 import hortonworks.hdf.sam.sdk.app.model.SAMApplication;
 import hortonworks.hdf.sam.sdk.app.model.SAMApplicationStatus;
 import hortonworks.hdf.sam.sdk.environment.SAMEnvironmentSDKUtils;
@@ -181,8 +182,46 @@ public class SAMAppSDKUtils extends BaseSDKUtils {
 		
 		
 	}
+
+
+	/**
+	 * Returns all the sources associated with teh SAM App
+	 * @param appName
+	 * @return
+	 */
+	public List<SAMAppSource> getSAMAppSources(String appName) {
+		
+		SAMApplication samApp = getSAMApp(appName);	
+		if(samApp == null) {
+			String errMsg = "App["+appName + "] doesn't exist";
+			throw new RuntimeException(errMsg);
+		}
+		
+		Map<String, String> mapParams = new HashMap<String, String>();
+		mapParams.put("appId", samApp.getId().toString());
+		
+		String url = constructRESTUrl("/catalog/topologies/{appId}/sources");
+		ResponseEntity<Map<String, List<SAMAppSource>>> response = restTemplate.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<Map<String, List<SAMAppSource>>>() {}, mapParams);
+		return response.getBody().get("entities");
+		
+	}
+
+
+
+	public SAMAppSource getSAMAppSource(String appName, String sourceName) {
+		
+		SAMAppSource sourceToFind = null;
+		List<SAMAppSource> appSources = getSAMAppSources(appName);
+		for(SAMAppSource source: appSources ) {
+			if(source.getName().equals(sourceName)) {
+				sourceToFind = source;
+				break;
+			}
+		}
+		
+		return sourceToFind;
+	}
 	
-	
-	
+
 
 }

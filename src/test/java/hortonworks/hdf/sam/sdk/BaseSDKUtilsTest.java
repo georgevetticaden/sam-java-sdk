@@ -5,7 +5,9 @@ import java.io.File;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.util.ResourceUtils;
 
 public class BaseSDKUtilsTest {
@@ -32,5 +34,16 @@ public class BaseSDKUtilsTest {
 			throw new RuntimeException(errMsg);
 		}	
 		return new FileSystemResource(file);
+	}		
+	
+	protected Resource createClassPathResource(String filePath) {
+		
+		Resource resource = new ClassPathResource(filePath);
+		if(!resource.exists()) {
+			String errMsg = "File["+filePath + "] cannot be found";
+			LOG.error(errMsg);
+			throw new RuntimeException(errMsg);
+		}	
+		return resource;
 	}		
 }
