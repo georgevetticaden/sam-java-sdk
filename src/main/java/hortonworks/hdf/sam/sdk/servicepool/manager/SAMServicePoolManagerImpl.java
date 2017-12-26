@@ -20,7 +20,7 @@ public class SAMServicePoolManagerImpl implements SAMServicePoolManager {
 	@Override
 	public SAMServicePoolDetails createServicePool(String clusterName, String ambariUrl, String username, String password) {
 		
-		LOG.info("Creating Service Pool from Ambari Cluster["+ clusterName + "] using Ambari Rest Endpoint["+ ambariUrl + "]");
+		LOG.info("Creating Service Pool from Ambari Cluster["+ clusterName + "] using Ambari Rest Endpoint["+ ambariUrl + "]");		
 		samServicePoolSDKUtils.createServicePool(clusterName, ambariUrl);
 		
 		LOG.info("Starting importing services into Service Pool from Ambari Cluster["+ clusterName + "] using Ambari Rest Endpoint["+ ambariUrl + "]");
