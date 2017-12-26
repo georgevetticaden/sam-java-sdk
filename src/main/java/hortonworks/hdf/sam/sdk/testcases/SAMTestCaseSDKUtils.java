@@ -290,8 +290,6 @@ public class SAMTestCaseSDKUtils extends BaseSDKUtils {
 		String url = constructRESTUrl("/catalog/topologies/{appId}/testcases/{testCaseId}");
 		
 		restTemplate.exchange(url, HttpMethod.DELETE, null, SAMTestCase.class, mapParams);		
-		
-		
 	}
 
 	public void addTestDataToTestCase(String appName, String testName,
