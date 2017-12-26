@@ -8,10 +8,10 @@ import static org.junit.Assert.assertNotNull;
 
 public class SAMServicePoolManagerTest extends BaseSDKUtilsTest{
 
-	public static final String HDF_SERVICE_POOL_NAME_TO_CREATE = "streamanalytics";
+	public static final String HDF_SERVICE_POOL_NAME_TO_CREATE = "streamanalytics_AUTOCREATED";
 	public static final String HDF_SERVICE_POOL_AMBRI_URL = "http://hdf-3-1-build0.field.hortonworks.com:8080/api/v1/clusters/streamanalytics";	
 	
-	public static final String HDP_SERVICE_POOL_NAME_TO_CREATE = "datalake";
+	public static final String HDP_SERVICE_POOL_NAME_TO_CREATE = "datalake_AUTOCREATED";
 	public static final String HDP_LAKE_SERVICE_POOL_AMBRI_URL = "http://hdp-2-6-3-ga0.field.hortonworks.com:8080/api/v1/clusters/datalake";	
 	
 	private SAMServicePoolManager samServicePoolMaanager = new SAMServicePoolManagerImpl(SAM_REST_URL);
