@@ -58,11 +58,11 @@ public class SAMTestCaseManagerImpl implements SAMTestCaseManager {
 		TestCaseExecution testCaseExecution = testCaseSDKUils.runTestCase(
 				appName, testName, testTimeOutInSeconds);
 		LOG.info("Execution of Test Case[" + testCaseExecution
-				+ "] started at time[" + new Date(startTime) + "]");
+				+ "] started at time[" + new Date(startTime) + "] with Timeout[" + testTimeOutInSeconds + "]");
 
 		// Add 20 seconds to whatever the configured Test timeout is for the
 		// test to finish
-		Long timeOutInMS = testTimeOutInSeconds * 1000L * 20000;
+		Long timeOutInMS = testTimeOutInSeconds * 1000L + 20000;
 
 		/*
 		 * Have to wait until the test executed has finisihed to fetch the
@@ -70,14 +70,14 @@ public class SAMTestCaseManagerImpl implements SAMTestCaseManager {
 		 */
 		while (!testCaseExecution.isFinished()) {
 
-			if (System.currentTimeMillis() - startTime > timeOutInMS) {
+			if ( (System.currentTimeMillis() - startTime) > timeOutInMS) {
 				Date timeOutTime = new Date();
 				String errMsg = "At time[" + timeOutTime + "], TimeOut["
 						+ testTimeOutInSeconds + "] ocurred before Test [App="
 						+ appName + ", Test Name=" + testName
 						+ "] could finish";
 				LOG.error(errMsg);
-				throw new RuntimeException("Test has timeout");
+				throw new RuntimeException("Test has time out.");
 			}
 			// sleep 30 seconds
 			Thread.sleep(30000);
