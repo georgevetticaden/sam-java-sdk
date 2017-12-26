@@ -21,7 +21,6 @@ public class SAMServicePoolSDKUtils extends BaseSDKUtils {
 	}
 
 	public SAMServicePool createServicePool(String clusterName, String ambariUrl) {
-		// TODO Auto-generated method stub
 		
 		/* Create request object */
 		Map<String, Object> requestMap = new HashMap<String, Object>();

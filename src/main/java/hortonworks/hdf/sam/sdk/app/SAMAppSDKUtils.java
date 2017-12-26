@@ -6,6 +6,7 @@ import hortonworks.hdf.sam.sdk.app.model.SAMApplication;
 import hortonworks.hdf.sam.sdk.app.model.SAMApplicationStatus;
 import hortonworks.hdf.sam.sdk.environment.SAMEnvironmentSDKUtils;
 import hortonworks.hdf.sam.sdk.environment.model.SAMEnvironment;
+import hortonworks.hdf.sam.sdk.environment.model.SAMEnvironmentDetails;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -85,13 +86,13 @@ public class SAMAppSDKUtils extends BaseSDKUtils {
 			throw new RuntimeException(errMsg);
 		}
 		/* Look sam env id */
-		SAMEnvironment samEnv = samEnvSDKUtils.getSAMEnvironment(samEnvName);
+		SAMEnvironmentDetails samEnv = samEnvSDKUtils.getSAMEnvironment(samEnvName);
 		
 		/* Create request object */
 		LinkedMultiValueMap<String, Object> requestMap = new LinkedMultiValueMap<String, Object>();
 		requestMap.add("file", samAppImportFileResource);
 		requestMap.add("topologyName", appName);		
-		requestMap.add("namespaceId", samEnv.getId());
+		requestMap.add("namespaceId", samEnv.getNamespace().getId());
 		
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.MULTIPART_FORM_DATA);		
