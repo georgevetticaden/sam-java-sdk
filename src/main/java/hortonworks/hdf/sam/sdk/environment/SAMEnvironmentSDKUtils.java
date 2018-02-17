@@ -65,6 +65,10 @@ public class SAMEnvironmentSDKUtils extends BaseSDKUtils {
 		HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<Map<String, Object>>(requestMap, headers);
 		String url = constructRESTUrl("/catalog/namespaces");
 
+		/* need to add this in secure SAM env or else 405 error occrs */		
+		restTemplate.optionsForAllow(url);
+		
+		//Execute the request
 		ResponseEntity<SAMEnvironment> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, SAMEnvironment.class);
 		
 		return response.getBody();

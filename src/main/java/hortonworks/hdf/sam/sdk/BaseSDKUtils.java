@@ -6,6 +6,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
+import javax.security.auth.login.AppConfigurationEntry;
+import javax.security.auth.login.Configuration;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -16,13 +19,17 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.kerberos.client.KerberosRestTemplate;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public abstract class BaseSDKUtils {
-	
+
+
+	private static final String SAM_JAAS_LOGIN_MODULE_NAME = "SamClient";
+
 	protected final Logger LOG = LoggerFactory.getLogger(this.getClass());	
 	
 	private String samRESTUrl;
@@ -36,11 +43,39 @@ public abstract class BaseSDKUtils {
 			throw new RuntimeException("SAMRestUril cannot not be empty");
 		}
 		this.samRESTUrl = restUrl;
-		this.restTemplate = new RestTemplate();
 		
-		
+		KerberosCredentials kerbCred = getKerberosCredentials();
+
+		if(kerbCred != null) {
+			LOG.info("Creating a Kerberos RestTemplate to talk to Secure SAM using princpal["+kerbCred.principal + " and keytab[" + kerbCred.keyTab+"]");
+			this.restTemplate = new KerberosRestTemplate(kerbCred.keyTab,kerbCred.principal);
+		} else {
+			LOG.info("Creating a RestTemplate to talk to Non Secure SAM");
+ 			this.restTemplate = new RestTemplate();
+		}
 		this.mapper = new ObjectMapper();
 
+	}
+
+	private KerberosCredentials getKerberosCredentials() {
+		KerberosCredentials kerbCred = null;
+
+		Configuration jaasConfig = Configuration.getConfiguration();
+		if(jaasConfig != null) {
+			AppConfigurationEntry[] samJaasConfigs = jaasConfig.getAppConfigurationEntry(SAM_JAAS_LOGIN_MODULE_NAME);	
+			if(samJaasConfigs != null && samJaasConfigs.length > 0) {
+				AppConfigurationEntry samJaasConfig = samJaasConfigs[0];
+				Map samSecuritySettings = samJaasConfig.getOptions();
+				String principalName = (String)samSecuritySettings.get("principal");
+				String keyTab =  (String) samSecuritySettings.get("keyTab");
+				if(StringUtils.isNotEmpty(principalName) && StringUtils.isNotEmpty(keyTab)) {
+					kerbCred = new KerberosCredentials(principalName, keyTab);
+				}
+				
+			}			
+		}
+		
+		return kerbCred;
 	}
 	
 	protected Map<String, Object> executeRESTGetCall(String url, Map<String, String> params) {		
@@ -73,13 +108,13 @@ public abstract class BaseSDKUtils {
 	}	
 	
 	protected HttpHeaders constructAuthHeader() {
-		String plainCreds = "adminj:adminj";
-		byte[] plainCredsBytes = plainCreds.getBytes();
-		byte[] base64CredsBytes = Base64.encodeBase64(plainCredsBytes);
-		String base64Creds = new String(base64CredsBytes);	
+//		String plainCreds = "adminj:adminj";
+//		byte[] plainCredsBytes = plainCreds.getBytes();
+//		byte[] base64CredsBytes = Base64.encodeBase64(plainCredsBytes);
+//		String base64Creds = new String(base64CredsBytes);	
 		
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Authorization", "Basic " + base64Creds);
+		//headers.add("Authorization", "Basic " + base64Creds);
 		
 		return headers;
 	}	
@@ -111,5 +146,17 @@ public abstract class BaseSDKUtils {
 			throw new RuntimeException(errMsg, e);
 		}
 	}
+	
+	private class KerberosCredentials {
+		String principal;
+		String keyTab;
+		public KerberosCredentials(String principal, String keyTab) {
+			super();
+			this.principal = principal;
+			this.keyTab = keyTab;
+		}
+		
+		
+	};
 
 }

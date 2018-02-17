@@ -33,7 +33,11 @@ public class SAMServicePoolSDKUtils extends BaseSDKUtils {
 		
 		HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<Map<String, Object>>(requestMap, headers);
 		String url = constructRESTUrl("/catalog/clusters");
-
+		
+		/* need to add this in secure SAM env or else 405 error occrs */		
+		restTemplate.optionsForAllow(url);
+		
+		//Execute the request
 		ResponseEntity<SAMServicePool> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, SAMServicePool.class);
 		
 		return response.getBody();

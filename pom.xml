@@ -69,6 +69,13 @@
 			<version>${org.springframework.version}</version>
 		</dependency>	
 		
+		<!-- Following is required for the KerberosRestTemplate -->
+		<dependency>
+		    <groupId>org.springframework.security.kerberos</groupId>
+		    <artifactId>spring-security-kerberos-client</artifactId>
+		    <version>1.0.1.RELEASE</version>
+		</dependency>		
+		
 		<!-- Spring -->		        
     	  
 		<dependency>

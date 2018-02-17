@@ -30,6 +30,7 @@ public class SAMAppSDKUtils extends BaseSDKUtils {
 
 	public SAMAppSDKUtils(String restUrl) {
 		super(restUrl);
+		
 		this.samEnvSDKUtils = new SAMEnvironmentSDKUtils(restUrl);
 	}
 	
@@ -99,8 +100,12 @@ public class SAMAppSDKUtils extends BaseSDKUtils {
 		
 		HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity = new HttpEntity<LinkedMultiValueMap<String,Object>>(requestMap, headers);
 		
-		//execute request
 		String url = constructRESTUrl("/catalog/topologies/actions/import");
+		
+		/* need to add this in secure SAM env or else 405 error occrs */		
+		restTemplate.optionsForAllow(url);
+		
+		//Execute the request
 		ResponseEntity<SAMApplication> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, SAMApplication.class);
 		
 		return response.getBody();

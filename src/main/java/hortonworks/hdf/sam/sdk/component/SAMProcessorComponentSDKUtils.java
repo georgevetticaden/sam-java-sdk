@@ -51,8 +51,13 @@ public class SAMProcessorComponentSDKUtils extends BaseSDKUtils {
 		
 		HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity = new HttpEntity<LinkedMultiValueMap<String,Object>>(requestMap, headers);
 		
-		/* Execute request */
+		
 		String url = constructRESTUrl("/catalog/streams/componentbundles/PROCESSOR/custom");
+		
+		/* need to add this in secure SAM env or else 405 error occrs */		
+		restTemplate.optionsForAllow(url);
+		
+		/* Execute request */
 		ResponseEntity<SAMComponent> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, SAMComponent.class);
 		
 		return getCustomSAMProcessor(response.getBody().getName());

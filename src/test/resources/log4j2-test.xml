@@ -14,8 +14,15 @@
     	<AppenderRef ref="CONSOLE"/>
       	<AppenderRef ref="ROLLING"/>
     </Logger>
+    
+    <Logger name="org.springframework" level="DEBUG">
+    	<AppenderRef ref="CONSOLE"/>
+      	<AppenderRef ref="ROLLING"/>
+    </Logger>
  
-    <Root level="ERROR">
+ 
+ 
+    <Root level="DEBUG">
       <AppenderRef ref="ROLLING"/>
     </Root>
     

@@ -1,7 +1,6 @@
 package hortonworks.hdf.sam.sdk.udf;
 
 import hortonworks.hdf.sam.sdk.BaseSDKUtils;
-import hortonworks.hdf.sam.sdk.component.model.SAMProcessorComponent;
 import hortonworks.hdf.sam.sdk.udf.model.SAMUDF;
 
 import java.util.HashMap;
@@ -9,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -21,7 +19,7 @@ import org.springframework.util.LinkedMultiValueMap;
 public class SAMUDFSDKUtils extends BaseSDKUtils {
 
 	public SAMUDFSDKUtils(String restUrl) {
-		super(restUrl);
+		super(restUrl );	
 	}
 
 	public List<SAMUDF> getAllUDFs() {
@@ -62,10 +60,14 @@ public class SAMUDFSDKUtils extends BaseSDKUtils {
 		HttpHeaders headers = new HttpHeaders();
 		HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity = new HttpEntity<LinkedMultiValueMap<String,Object>>(requestMap, headers);
 		
+		
+		String url = constructRESTUrl("/catalog/streams/udfs");		
+		
+		/* need to add this in secure SAM env or else 405 error occrs */		
+		restTemplate.optionsForAllow(url);
+		
 		/* Execute request */
-		String url = constructRESTUrl("/catalog/streams/udfs");
-		ResponseEntity<SAMUDF> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, SAMUDF.class);
-			
+		ResponseEntity<SAMUDF> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, SAMUDF.class);		
 		return response.getBody();
 		
 	}

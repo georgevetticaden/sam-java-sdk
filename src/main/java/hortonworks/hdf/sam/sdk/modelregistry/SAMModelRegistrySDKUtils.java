@@ -20,8 +20,7 @@ import org.springframework.util.LinkedMultiValueMap;
 public class SAMModelRegistrySDKUtils extends BaseSDKUtils {
 
 	public SAMModelRegistrySDKUtils(String restUrl) {
-		super(restUrl);
-		// TODO Auto-generated constructor stub
+		super(restUrl );
 	}
 
 	public List<PMMLModel> getAllModels() {
@@ -67,6 +66,10 @@ public class SAMModelRegistrySDKUtils extends BaseSDKUtils {
 		
 		/* Execute request */
 		String url = constructRESTUrl("/catalog/ml/models");
+		
+		/* need to add this in secure SAM env or else 405 error occrs */		
+		restTemplate.optionsForAllow(url);
+		
 		ResponseEntity<PMMLModel> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, PMMLModel.class);
 		return response.getBody();
 		
