@@ -100,6 +100,7 @@ public class SAMServicePoolSDKUtils extends BaseSDKUtils {
 		HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<Map<String, Object>>(requestMap, headers);
 		String url = constructRESTUrl("/catalog/cluster/import/ambari");
 
+		LOG.info("import ambari services url: " + url);
 		ResponseEntity<Map<String, Object>> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<Map<String, Object>>(){});
 		return response.getBody();
 	}	
